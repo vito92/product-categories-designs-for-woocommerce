@@ -106,6 +106,8 @@ function pcdfwoo_product_categories_slider( $atts, $content = null ) {
 	$product_categories = get_terms( 'product_cat', $args );
 
 	ob_start();
+	
+	require_once __DIR__.'/../../../fairgleichen/misc/get_random_product_thumbnail_of_category.php';
 
 	if ( $product_categories ) { ?>
 		<div class="pcdfwoo_woocommerce_slider pcdfwoo-clearfix <?php echo $extra_class; ?>">
@@ -113,10 +115,9 @@ function pcdfwoo_product_categories_slider( $atts, $content = null ) {
 				<div class="pcdfwoo-product-cat-slider" id="pcdfwoo-<?php echo $unique; ?>">
 
 					<?php foreach ( $product_categories as $category ) {
-						$cat_thumb_id	= get_term_meta( $category->term_id, 'thumbnail_id', true );
-						$cat_thumb_url	= wp_get_attachment_image_src( $cat_thumb_id, 'shop_catalog' );
-						$term_link		= get_term_link( $category, 'product_cat' );
-						$cat_thumb_link	= $cat_thumb_url[0];
+						$term_link = get_term_link( $category, 'product_cat' );
+						$cat_thumb = ffgl_get_random_product_thumbnail_of_category($category->term_id);
+						$cat_thumb_link = $cat_thumb['url'];
 					?>
 
 					<div class="pcdfwoo-product-slider">
@@ -128,9 +129,10 @@ function pcdfwoo_product_categories_slider( $atts, $content = null ) {
 								<?php } else { 
 									echo wc_placeholder_img();
 								 } ?>
-								<div class="pcdfwoo_title"><?php echo $category->name; ?> <span class="pcdfwoo_count"><?php echo $category->count; ?> </span></div>
+								<div class="pcdfwoo_title"><?php echo $category->name; ?></div>
 							</a>
 							</div>
+							<?php do_action( 'ffgl_quellenangaben_category_slider', $cat_thumb['product'] ); ?>
 						</div>
 					</div>
 					<?php } ?>
